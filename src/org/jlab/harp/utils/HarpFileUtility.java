@@ -8,6 +8,9 @@ package org.jlab.harp.utils;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  *
@@ -34,5 +37,28 @@ public class HarpFileUtility {
             }
         }
         return choise;
+    }
+    
+    public static ArrayList<String>  getFileList(String dir, String startsWith, int limit){
+        ArrayList<String>  fileList = new ArrayList<String>();
+        File fl = new File(dir);
+        File[] files = fl.listFiles(new FileFilter() {			
+            public boolean accept(File file) {
+                return file.isFile();
+            }
+        });
+        
+        Arrays.sort(files, new Comparator<File>(){
+            @Override
+            public int compare(File f1, File f2)
+            {
+                return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
+            } 
+        });
+        
+        for(File f : files){
+            fileList.add(f.getAbsolutePath());
+        }
+        return fileList;
     }
 }

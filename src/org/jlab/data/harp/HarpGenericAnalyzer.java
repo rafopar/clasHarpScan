@@ -92,4 +92,19 @@ public class HarpGenericAnalyzer {
     public ArrayList<DataSetXY>  getHarpData(){
         return harpData;
     }
+    
+    
+    public String[] getLegend(int index){
+        String[] legend = new String[3];
+ 
+        legend[0] = String.format("%-12s %8.5f", "mean", 
+                harpFunc.get(index).parameter(1).value());
+        legend[1] = String.format("%-12s %8.5f", "sigma", 
+                harpFunc.get(index).parameter(2).value());
+        legend[2] = String.format("%-12s %8.5f", "chi2",
+                harpFunc.get(index).getChiSquare(harpData.get(index))/
+                harpFunc.get(index).getNDF(harpData.get(index))
+                );
+        return legend;
+    }
 }

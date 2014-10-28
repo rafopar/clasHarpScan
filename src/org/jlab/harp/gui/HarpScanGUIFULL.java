@@ -55,6 +55,14 @@ public class HarpScanGUIFULL extends JFrame implements ActionListener {
     private Properties analyzerProperties    = new Properties();
     private String     harpScanAnalyzerType  = "tagger";
     private String     propertiesFileName    = "";
+    
+    String[] wireNames = new String[]{"Upstream Left","UpstreamRight",
+            "Tagger Left", " Tagger Right",
+            "Downstream Left","Downstream Right",
+            "Downstream Top", "Downstream Bottom",
+            "BLM-1","BLM-2","HPS Left","HPS Right",
+            "ECAL Cosm 1","ECAL Cosm 2","ECAL Cosm 3","ECAL Cosm 4",
+        };
     private HarpGenericAnalyzer  harpAnalyzer = new HarpGenericAnalyzer();
 
     public HarpScanGUIFULL(String type, double[] limits){        
@@ -241,19 +249,22 @@ public class HarpScanGUIFULL extends JFrame implements ActionListener {
         
         Box boxWR = Box.createHorizontalBox();
         boxWR.add(new JLabel("Refit Data : "));
-        String[] wireNames = new String[]{"Upstream Left","UpstreamRight",
-            "Tagger Left", " Tagger Right",
-            "Downstream Left","Downstream Right",
-            "Downstream Top", "Downstream Bottom",
-            "BLM-1","BLM-2","HPS Left","HPS Right",
-            "ECAL Cosm 1","ECAL Cosm 2","ECAL Cosm 3","ECAL Cosm 4",
-        };
+       
         JComboBox comboWire = new JComboBox(wireNames);
         comboWire.setSelectedIndex(11);
         boxWR.add(comboWire);
         vertical.add(boxWR);
         
+        Box boxBT = Box.createHorizontalBox();
+        JButton buttonView = new JButton("Data View");
+        buttonView.addActionListener(this);
+        boxBT.add(buttonView);
         
+        JButton buttonEx = new JButton("Expert");
+        buttonEx.addActionListener(this);
+        boxBT.add(buttonEx);
+        
+        vertical.add(boxBT);
         panel.add(vertical);
     }
     
@@ -281,8 +292,14 @@ public class HarpScanGUIFULL extends JFrame implements ActionListener {
             DataSetXY data = harpAnalyzer.getHarpFuncs().get(loop).getDataSet();
             canvas.addLine(loop, 
                     data.getDataX().getArray(), 
-                    data.getDataY().getArray(),4);
+                    data.getDataY().getArray(),2);
         }
+        
+        for(int loop =0; loop < ngraphs; loop++){
+            String[] legend = harpAnalyzer.getLegend(loop);
+            canvas.addLegend(loop, 0.04, 0.02, legend);
+        }
+        
     }
     
     public void loadData(){
@@ -354,7 +371,12 @@ public class HarpScanGUIFULL extends JFrame implements ActionListener {
             this.makeLogEntry();
         }
  
-
+        if(e.getActionCommand().compareTo("Data View")==0){
+            DataTable table = new DataTable();
+            table.readFile("/Users/gavalian/Work/Software/Release-6.0/JavaProjects/clasHarpScan/data/harp_tagger_05-16-12.txt");
+            DataViewDialog dialog = new DataViewDialog(table,2,this.wireNames);
+            dialog.setVisible(true);
+        }
         //System.err.println("action command = " + e.getActionCommand());
         //this.loadData();
     }
