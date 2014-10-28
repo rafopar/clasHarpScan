@@ -4,9 +4,8 @@
  * and open the template in the editor.
  */
 
-package org.jlab.data.gui;
+package org.jlab.harp.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -20,11 +19,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.jlab.data.fitter.HarpFunctionFitter;
-import org.jlab.data.fitter.HarpScanFunction;
+
 import org.jlab.data.graph.DataTable;
-import org.jlab.data.harp.Harp2WireAnalyzer;
-import org.jlab.data.harp.Harp3WireAnalyzer;
+
 
 /**
  *
@@ -96,12 +93,12 @@ public class ControlsPanel extends JPanel implements ActionListener {
             analyzer.fit();
             analyzer.show();
             */
-            
+            /*
             Harp2WireAnalyzer analyzer = new Harp2WireAnalyzer(dataTable,13,
                     new double[]{18.0,35.0,35.0,60.0});
             analyzer.fit();
             analyzer.show();
-            
+            */
             //System.err.println(dataTable.toString());
             /*
             double[] xcolumn = dataTable.getColumnAsDouble( 0, 0, 3.0, 20.0);

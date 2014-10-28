@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package org.jlab.data.gui;
+package org.jlab.harp.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -37,7 +37,7 @@ public class ParameterPanel extends JPanel {
         int count = labels.length;
         titled = new TitledBorder(paneltitle);
         this.setPreferredSize(new Dimension(500,count*55));
-        this.setMaximumSize(new Dimension(500,count*55));
+        this.setMaximumSize(new Dimension(400,count*55));
         this.setBorder(titled);
         this.setLayout(new GridLayout(count,2,10,10));
         
@@ -47,8 +47,8 @@ public class ParameterPanel extends JPanel {
             this.add(label);
             JPanel insidePanel = new JPanel();
             insidePanel.setLayout(new FlowLayout());
-            JTextField minText = new JTextField(8);
-            JTextField maxText = new JTextField(8);  
+            JTextField minText = new JTextField(4);
+            JTextField maxText = new JTextField(4);  
             minText.setHorizontalAlignment(JTextField.RIGHT);
             maxText.setHorizontalAlignment(JTextField.RIGHT);
             insidePanel.add(minText);
@@ -66,6 +66,16 @@ public class ParameterPanel extends JPanel {
         wireToFit = new JComboBox(new String[]{"2","3","4","5","6","7","8"});
         this.add(label);
         this.add(wireToFit);*/
+    }
+    
+    
+    public void setEditable(boolean isEditable){
+        for(JTextField field : minValues){
+            field.setEditable(isEditable);
+        }
+        for(JTextField field : maxValues){
+            field.setEditable(isEditable);
+        }
     }
     
     public void setMinMax(int index, Double min, Double max){
