@@ -211,6 +211,8 @@ public class HarpScanGUIFULL extends JFrame implements ActionListener {
     }
     
     public void makeLogEntry(){
+        
+        
         /*
         String imagePath = this.getTempImagePath();
         if(imagePath!=null){        
