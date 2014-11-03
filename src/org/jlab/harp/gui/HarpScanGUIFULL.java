@@ -40,24 +40,28 @@ import org.jlab.scichart.canvas.ScChartCanvas;
  * @author gavalian
  */
 public class HarpScanGUIFULL extends JFrame implements ActionListener {
-     private ParameterPanel wirePositions = null;
+    private ParameterPanel wirePositions = null;
     private ParameterPanel peakPositions = null;
     private JSplitPane  splitPane = null;
     private Integer     numberOfWires  = 3;
-    public  Integer     harpWireToFit  = 13;
+    public  Integer     harpWireToFit  = 4;
+    private JComboBox comboWire = null; 
     private DataTable   dataTable = new DataTable();
     private ScChartCanvas canvas  = null;
     private String   currentFileName         = "";
     private String   currentFilePath         = "";
     private String   currentHarpFilesDir     = ".";
+    private String   all_harps_dir           = "";
+    public  String   this_harp_dir           = "";
     private double   wireScanPositions[]     = null;
-    private String   autoLoadFileStartsWith  = "harp_generic";
+    //private String   autoLoadFileStartsWith  = "harp_generic";
+    private String   autoLoadFileStartsWith  = "harp_";
     private Properties analyzerProperties    = new Properties();
     private String     harpScanAnalyzerType  = "tagger";
     private String     propertiesFileName    = "";
     
     String[] wireNames = new String[]{"Upstream Left","UpstreamRight",
-            "Tagger Left", " Tagger Right",
+				      "Tagger Left", "Tagger Right","Tagger Top",
             "Downstream Left","Downstream Right",
             "Downstream Top", "Downstream Bottom",
             "BLM-1","BLM-2","HPS Left","HPS Right",
@@ -93,13 +97,17 @@ public class HarpScanGUIFULL extends JFrame implements ActionListener {
         this.add(splitPane);        
         this.pack();
         this.setVisible(true);
-        this.initializeEnvironment(type);
+        //this.initializeEnvironment(type);
         //this.initializeDirectory();
     }
     
     public void initializeEnvironment(String harStyle){
-        currentHarpFilesDir = System.getenv("HARPFILE_DIR");
+        all_harps_dir = System.getenv("HARPFILE_DIR");
         
+	currentHarpFilesDir = all_harps_dir + "/" + this_harp_dir;
+	System.out.println("current Harp dir = " + currentHarpFilesDir);
+	System.out.println("this.this_harp_dir = " + this_harp_dir);
+	
         if(currentHarpFilesDir==null){
             System.err.println("** ERROR ** : --> HARPFILE_DIR environment is not defined...");                      
         } else {
@@ -176,8 +184,11 @@ public class HarpScanGUIFULL extends JFrame implements ActionListener {
     }
     
     public void initializeDirectory(){
-        currentHarpFilesDir = System.getenv("HARPFILE_DIR");
-        if(currentHarpFilesDir==null){
+  
+        all_harps_dir = System.getenv("HARPFILE_DIR");
+	currentHarpFilesDir = all_harps_dir + "/" + this_harp_dir;
+
+	if(currentHarpFilesDir==null){
             currentHarpFilesDir = ".";
             System.err.println("--> ERROR: environment variable HARPFILE_DIR is not set");
         } else {
@@ -219,7 +230,8 @@ public class HarpScanGUIFULL extends JFrame implements ActionListener {
             log.setImgPath(imagePath);
 //log.getRunNumber();                                                                        
             log.addComments();
-        }*/
+        }
+	*/
     }
     
     
@@ -250,7 +262,7 @@ public class HarpScanGUIFULL extends JFrame implements ActionListener {
         Box boxWR = Box.createHorizontalBox();
         boxWR.add(new JLabel("Refit Data : "));
        
-        JComboBox comboWire = new JComboBox(wireNames);
+        comboWire = new JComboBox(wireNames);
         comboWire.setSelectedIndex(11);
         boxWR.add(comboWire);
         vertical.add(boxWR);
@@ -274,7 +286,13 @@ public class HarpScanGUIFULL extends JFrame implements ActionListener {
         table.readFile(filename);
         
         table.show();
-        harpAnalyzer.init(table, 13);
+
+        this.harpWireToFit = comboWire.getSelectedIndex() + 2;
+        System.err.println("SWITHC WIRE TO " + this.harpWireToFit);
+
+	//harpAnalyzer.init(table, 13);
+        harpAnalyzer.init(table, harpWireToFit);
+
         harpAnalyzer.fitData();
         ArrayList<DataSetXY>  harpData = harpAnalyzer.getHarpData();
         int ngraphs = harpData.size();
@@ -305,7 +323,7 @@ public class HarpScanGUIFULL extends JFrame implements ActionListener {
     public void loadData(){
         JFileChooser chooser = new JFileChooser(currentHarpFilesDir);
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
-            "Harp Scan Files", "txt","text");
+								     "Harp Scan Files", "txt","text");
         chooser.setFileFilter(filter);
         int returnVal = chooser.showOpenDialog(this);
         if(returnVal == JFileChooser.APPROVE_OPTION) {
@@ -313,18 +331,25 @@ public class HarpScanGUIFULL extends JFrame implements ActionListener {
             currentFilePath = chooser.getSelectedFile().getAbsolutePath();
             System.out.println("You chose to open this file: " +
                     chooser.getSelectedFile().getName() + 
-                    "  " + chooser.getSelectedFile().getAbsolutePath());            
+                    "  " + chooser.getSelectedFile().getAbsolutePath());  
             this.loadData(chooser.getSelectedFile().getAbsolutePath());
         }
     }
     
     public static void main(String[] args){
         
-        String wireScanType = "HARP_2_WIRE";
+	String harp_dir = args[0];
+	
+	System.out.println("harp_dir = " + harp_dir);
+
+	String wireScanType = "HARP_2_WIRE";
         int    nwires       = 3;
         int  windowSizeX = 1200;
         int  windowSizeY =  800;
-        int wiretofit    =   13;
+        int wiretofit    =   4; // Was 13 before
+
+	//System.out.println("The harp_dir = " + this_harp_dir);
+
         /*
         if(args.length>0){
             windowSizeX = Integer.parseInt(args[0]);
@@ -354,8 +379,11 @@ public class HarpScanGUIFULL extends JFrame implements ActionListener {
         }*/
         
         HarpScanGUIFULL harp = new HarpScanGUIFULL(wireScanType,limits);
+	harp.this_harp_dir = harp_dir;
         harp.harpWireToFit = wiretofit;
         harp.setSize(windowSizeX,windowSizeY);
+	harp.initializeEnvironment(wireScanType);
+	System.out.println("harp.this_harp_dir = " + harp.this_harp_dir);
     }
 
     @Override
@@ -370,10 +398,13 @@ public class HarpScanGUIFULL extends JFrame implements ActionListener {
         if(e.getActionCommand().compareTo("Log Entry")==0){
             this.makeLogEntry();
         }
- 
-        if(e.getActionCommand().compareTo("Data View")==0){
+	
+	if(e.getActionCommand().compareTo("Data View")==0){
             DataTable table = new DataTable();
-            table.readFile("/Users/gavalian/Work/Software/Release-6.0/JavaProjects/clasHarpScan/data/harp_tagger_05-16-12.txt");
+            //table.readFile("/Users/gavalian/Work/Software/Release-6.0/JavaProjects/clasHarpScan/data/harp_tagger_05-16-12.txt");
+            //table.readFile("/misc/home/epics/DATA/HARP_SCANS/harp_2c21/harp_2c21_test1.txt");
+            table.readFile(currentFilePath);
+	    System.out.println("Viewing file " + currentFilePath);
             DataViewDialog dialog = new DataViewDialog(table,2,this.wireNames);
             dialog.setVisible(true);
         }

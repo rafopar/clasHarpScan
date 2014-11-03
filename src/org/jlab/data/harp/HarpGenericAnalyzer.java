@@ -66,7 +66,7 @@ public class HarpGenericAnalyzer {
             func.parameter(0).set(harpData.get(loop).getDataY().getMax(), 
                     0.0, harpData.get(loop).getDataY().getMax()*10.0);
             func.parameter(1).setValue(harpData.get(loop).getDataX().geatMean());
-            func.parameter(2).set(harpData.get(loop).getDataX().getRMS(),
+            func.parameter(2).set(harpData.get(loop).getDataX().getRMS()*0.1,
                     0.0,harpData.get(loop).getDataX().getRMS()*3.0);
             func.parameter(3).set(0.0, -100, 100);
             func.parameter(4).set(0.0, -100, 100);
