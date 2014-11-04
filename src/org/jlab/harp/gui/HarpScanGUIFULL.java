@@ -29,6 +29,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.jlab.AutoLogEntry.MakeLogEntry;
 import org.jlab.data.graph.DataSetXY;
 import org.jlab.data.graph.DataTable;
 import org.jlab.data.harp.HarpGenericAnalyzer;
@@ -204,26 +205,37 @@ public class HarpScanGUIFULL extends JFrame implements ActionListener {
         StringBuilder str = new StringBuilder();
         if(System.getenv("SCRIPT_DIR")!=null){
             str.append(System.getenv("SCRIPT_DIR"));
-            str.append("/../etc/temp/temptorary_image_scan.png");
+            str.append("/../fit_Image/temptorary_image_scan.png");
+            //str.append("/../etc/temp/temptorary_image_scan.png");
             return str.toString();
         }
         return null;
     }
     
     public void makeLogEntry(){
-        
-        
-        /*
+               
         String imagePath = this.getTempImagePath();
         if(imagePath!=null){        
             canvas.exportPNG(imagePath);
             MakeLogEntry log = new MakeLogEntry();
+            log.setTitle("Scan of " + this_harp_dir);
             StringBuilder str = new StringBuilder();
-            for(int loop = 0; loop < harpAnalyzer.functions.size();loop++){
+//            for(int loop = 0; harpAnalyzer.functions.size() >= loop;loop++){
+              for(int loop = 0; harpAnalyzer.getHarpFuncs().size() > loop;loop++){ 
+                  System.out.println("Loop = " + loop);
                 String[] labels = harpAnalyzer.getLegend(loop);
                 for(String text : labels) {
                     str.append(text);
                     str.append("\n");
+                }
+                
+                if( loop == 2 )
+                {
+                   String[] alphaAB =  harpAnalyzer.getLegendAlphaAB();
+                    for(String text : alphaAB) {
+                        str.append(text);
+                        str.append("\n");
+                    }
                 }
             }
             log.setFitParameters(str.toString());
@@ -233,7 +245,7 @@ public class HarpScanGUIFULL extends JFrame implements ActionListener {
 //log.getRunNumber();                                                                        
             log.addComments();
         }
-	*/
+	
     }
     
     
@@ -273,11 +285,11 @@ public class HarpScanGUIFULL extends JFrame implements ActionListener {
         JButton buttonView = new JButton("Data View");
         buttonView.addActionListener(this);
         boxBT.add(buttonView);
-        
+/*        
         JButton buttonEx = new JButton("Expert");
         buttonEx.addActionListener(this);
         boxBT.add(buttonEx);
-        
+  */      
         vertical.add(boxBT);
         panel.add(vertical);
     }
@@ -320,6 +332,12 @@ public class HarpScanGUIFULL extends JFrame implements ActionListener {
             canvas.addLegend(loop, 0.04, 0.02, legend);
         }
         
+        if( ngraphs == 3 )
+        {
+            String[] legend = harpAnalyzer.getLegendAlphaAB();
+            canvas.addLegend(0, 0.65, 0.05, legend);
+        }
+        
     }
     
     public void loadData(){
@@ -341,7 +359,7 @@ public class HarpScanGUIFULL extends JFrame implements ActionListener {
     public static void main(String[] args){
         
 	String harp_dir = args[0];
-	
+	        
 	System.out.println("harp_dir = " + harp_dir);
 
 	String wireScanType = "HARP_2_WIRE";

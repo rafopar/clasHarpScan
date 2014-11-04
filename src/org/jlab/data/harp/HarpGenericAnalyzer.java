@@ -43,7 +43,7 @@ public class HarpGenericAnalyzer {
         harpData.clear();
         java.util.List<DataVector> clusters = peak.getClusters();
         for(DataVector vec : clusters){
-            if(vec.getSize()>5){
+            if(vec.getSize()>10){
                 double mean = vec.geatMean();
                 double rms  = vec.getRMS();
                 double xmin = mean - graphCutSigmas*rms;
@@ -95,16 +95,49 @@ public class HarpGenericAnalyzer {
     
     
     public String[] getLegend(int index){
-        String[] legend = new String[3];
+        String[] legend = new String[4];
  
-        legend[0] = String.format("%-12s %8.5f", "mean", 
+       int n_wire = harpData.size();
+        
+        String[] wireName = new String[n_wire];
+        
+        if( n_wire == 2 )
+        {
+           wireName[0] = "Wire X";
+           wireName[1] = "Wire Y";
+        }
+        else if( n_wire == 3 )
+        {
+           wireName[0] = "Wire 45 deg";
+           wireName[1] = "Wire Y";
+           wireName[2] = "Wire Y";
+        }
+        
+        legend[0] = String.format("Wire         %-10s", wireName[index]);
+        legend[1] = String.format("%-12s %8.5f", "mean", 
                 harpFunc.get(index).parameter(1).value());
-        legend[1] = String.format("%-12s %8.5f", "sigma", 
+        legend[2] = String.format("%-12s %8.5f", "sigma", 
                 harpFunc.get(index).parameter(2).value());
-        legend[2] = String.format("%-12s %8.5f", "chi2",
+        legend[3] = String.format("%-12s %8.5f", "chi2",
                 harpFunc.get(index).getChiSquare(harpData.get(index))/
                 harpFunc.get(index).getNDF(harpData.get(index))
                 );
         return legend;
     }
+    
+    public String[] getLegendAlphaAB()
+    {
+       String[] legend = new String[3];
+       double sigma_45 = harpFunc.get(0).parameter(2).value();
+       double sigma_X = harpFunc.get(1).parameter(2).value();
+       double sigma_Y = harpFunc.get(2).parameter(2).value();
+       
+       Harp3ScanTranslator translate = new Harp3ScanTranslator( sigma_45, sigma_X, sigma_Y);
+       legend[0] = String.format( "%-12s  %8.5f", "Alpha", translate.getAlpha() );
+       legend[1] = String.format( "%-12s  %8.5f", "A", translate.getA() );
+       legend[2] = String.format( "%-12s  %8.5f", "B", translate.getB() );
+       
+       return legend;
+    }
+    
 }
